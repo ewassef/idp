@@ -1,0 +1,103 @@
+# Default values for kratos-selfservice-ui-node.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+securityMode: cookie
+replicaCount: 1
+
+image:
+  repository: oryd/kratos-selfservice-ui-node
+  tag: latest
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  annotations: 
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: id.vonage.k8s.local
+      paths: 
+      - path: "/ui(/|$)(.*)"
+        pathType: ImplementationSpecific
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+  allowPrivilegeEscalation: false
+  privileged: false
+
+deployment:
+  resources: {}
+  #  We usually recommend not to specify default resources and to leave this as a conscious
+  #  choice for the user. This also increases chances charts run on environments with little
+  #  resources, such as Minikube. If you do want to specify resources, uncomment the following
+  #  lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  #  limits:
+  #    cpu: 100m
+  #    memory: 128Mi
+  #  requests:
+  #    cpu: 100m
+  #  memory: 128Mi
+
+  # Node labels for pod assignment.
+  nodeSelector: {}
+  # If you do want to specify node labels, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'annotations:'.
+  #   foo: bar
+
+  # Configure node tolerations.
+  tolerations: []
+
+  labels: {}
+  #      If you do want to specify additional labels, uncomment the following
+  #      lines, adjust them as necessary, and remove the curly braces after 'labels:'.
+  #      e.g.  type: app
+
+  annotations: 
+    dapr.io/app-id: "sample-ui"
+    dapr.io/enabled: "true"
+    dapr.io/app-port: "3000"
+    dapr.io/config: "vonage"
+  #      If you do want to specify annotations, uncomment the following
+  #      lines, adjust them as necessary, and remove the curly braces after 'annotations:'.
+  #      e.g.  sidecar.istio.io/rewriteAppHTTPProbers: "true"
+
+  # https://github.com/kubernetes/kubernetes/issues/57601
+  automountServiceAccountToken: true
+
+affinity: {}
+
+# Set this to ORY Kratos's Admin URL
+kratosAdminUrl: "http://kratos-admin"
+
+# Set this to ORY Kratos's public URL
+kratosPublicUrl: "http://localhost:3500/v1.0/invoke/kratos/method/"
+
+# Set this to ORY Kratos's public URL accessible from the outside world.
+kratosBrowserUrl: "https://id.vonage.k8s.local:8443/idp/"
+
+# The baseUrl
+baseUrl: "https://id.vonage.k8s.local:8443/ui"
+
+# The jwksUrl
+jwksUrl: "http://oathkeeper-api"
+
+projectName: "Vonage IAM"
