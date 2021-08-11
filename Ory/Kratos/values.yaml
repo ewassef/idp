@@ -91,17 +91,16 @@ kratos:
   development: false
   # Enable the initialization job. Required to work with a DB
   autoMigrate: true
-  configmap:
-  "login.jsonnet": |
-    function(ctx) {
-      flow_id: ctx.flow.id,
-      identity_id: if ctx["identity"] != null then ctx.identity.id,
-      headers: ctx.request_headers,
-      url: ctx.request_url,
-      method: ctx.request_method,
-      __raw: ctx
-    }
   identitySchemas:
+    "login.jsonnet": |
+      function(ctx) {
+        flow_id: ctx.flow.id,
+        identity_id: if ctx["identity"] != null then ctx.identity.id,
+        headers: ctx.request_headers,
+        url: ctx.request_url,
+        method: ctx.request_method,
+        __raw: ctx
+      }
     "identity.default.schema.json": |
       {
          "$id": "https://schemas.ory.sh/presets/kratos/identity.email.schema.json",
