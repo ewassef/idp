@@ -102,23 +102,27 @@ kubectl run -it --rm cockroach-client --image=cockroachdb/cockroach --restart=Ne
 
 #install hydra
 helm pull ory/hydra -d .\Ory\Hydra --version 0.19.0
-helm install hydra .\Ory\Hydra\hydra-0.19.0.tgz -f .\Ory\Hydra\values.yaml -n identity
+helm install hydra .\Ory\Hydra\hydra-0.19.0.tgz -f .\Ory\Hydra\values.yaml -n identity --set maester.enabled=false --set ingress.admin.enabled=false
+helm install hydra-admin .\Ory\Hydra\hydra-0.19.0.tgz -f .\Ory\Hydra\values.yaml -n identity --set "deployment.annotations.\dapr\.io\/app-id=hydra-admin" --set "deployment.annotations.\dapr\.io\/app-port='4445'" --set ingress.public.enabled=false
 kubectl create rolebinding hydra-secrets-reader --role secret-reader --serviceaccount identity:hydra -n identity
+kubectl create rolebinding hydra-admin-secrets-reader --role secret-reader --serviceaccount identity:hydra-admin -n identity
 
 #install kratos
 helm pull ory/kratos -d .\Ory\Kratos --version 0.19.0
 Write-Output "Installing Kratos, this might take time as migrations last almost 8 mins"
 helm install kratos .\Ory\Kratos\kratos-0.19.0.tgz -f .\Ory\Kratos\values.yaml -n identity --timeout 10m0s
+kubectl create rolebinding kratos-secrets-reader --role secret-reader --serviceaccount identity:kratos -n identity
+helm install kratos-admin .\Ory\Kratos\kratos-0.19.0.tgz -f .\Ory\Kratos\values-admin.yaml -n identity 
+kubectl create rolebinding kratos-admin-secrets-reader --role secret-reader --serviceaccount identity:kratos-admin -n identity
 
 #install sample UI
 helm pull ory/kratos-selfservice-ui-node -d .\Ory\Kratos --version 0.19.0
 helm install kratos-ui .\Ory\Kratos\kratos-selfservice-ui-node-0.19.0.tgz -f .\Ory\Kratos\ui-values.yaml -n identity
-kubectl create rolebinding kratos-secrets-reader --role secret-reader --serviceaccount identity:kratos -n identity
 
 #install keto
 helm pull ory/keto -d .\Ory\Keto --version 0.19.0
 helm install keto .\Ory\Keto\keto-0.19.0.tgz -f .\Ory\Keto\values.yaml -n identity
-
+kubectl create rolebinding keto-secrets-reader --role secret-reader --serviceaccount identity:keto -n identity
 }
 
 function Configure-RedisInsights(){

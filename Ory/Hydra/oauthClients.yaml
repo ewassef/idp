@@ -1,0 +1,12 @@
+apiVersion: hydra.ory.sh/v1alpha1
+kind: OAuth2Client
+metadata:
+  name: github
+  annotations: {}
+spec:
+  grantTypes: 
+  - client_credentials
+  responseTypes: 
+  - token
+  scope: test
+  secretName: test-oauth

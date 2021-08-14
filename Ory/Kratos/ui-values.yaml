@@ -86,7 +86,7 @@ deployment:
 affinity: {}
 
 # Set this to ORY Kratos's Admin URL
-kratosAdminUrl: "http://kratos-admin"
+kratosAdminUrl: "http://localhost:3500/v1.0/invoke/kratos-admin/method/"
 
 # Set this to ORY Kratos's public URL
 kratosPublicUrl: "http://localhost:3500/v1.0/invoke/kratos/method/"
