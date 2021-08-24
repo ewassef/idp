@@ -27,8 +27,8 @@ service:
     port: 80
     # If you do want to specify annotations, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'annotations:'.
-    annotations: {}
-    # kubernetes.io/ingress.class: nginx
+    annotations: 
+      kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   
 
@@ -43,7 +43,7 @@ ingress:
     enabled: true
     annotations: 
       nginx.ingress.kubernetes.io/rewrite-target: /$2
-      # kubernetes.io/ingress.class: nginx
+      kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
     hosts:
       - host: id.vonage.k8s.local

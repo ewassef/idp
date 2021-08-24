@@ -32,8 +32,8 @@ service:
     port: 4444
     # If you do want to specify annotations, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'annotations:'.
-    annotations: {}
-    # kubernetes.io/ingress.class: nginx
+    annotations:  
+      kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
     labels: {}
     #      If you do want to specify additional labels, uncomment the following
@@ -49,8 +49,8 @@ service:
     port: 4445
     # If you do want to specify annotations, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'annotations:'.
-    annotations: {}
-    # kubernetes.io/ingress.class: nginx
+    annotations:  
+      kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
     labels: {}
     #      If you do want to specify additional labels, uncomment the following
@@ -65,7 +65,7 @@ ingress:
     enabled: true
     annotations: 
       nginx.ingress.kubernetes.io/rewrite-target: /$2
-    #     kubernetes.io/ingress.class: nginx
+      kubernetes.io/ingress.class: nginx
     #     kubernetes.io/tls-acme: "true"
     hosts:
       - host: id.vonage.k8s.local
@@ -85,7 +85,7 @@ ingress:
       nginx.ingress.kubernetes.io/rewrite-target: /$2
     #      If you do want to specify annotations, uncomment the following
     #      lines, adjust them as necessary, and remove the curly braces after 'annotations:'.
-    #      kubernetes.io/ingress.class: nginx
+      kubernetes.io/ingress.class: nginx
     #      kubernetes.io/tls-acme: "true"
     hosts:
       - host: id.vonage.k8s.local
