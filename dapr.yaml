@@ -221,6 +221,8 @@ kind: Ingress
 metadata:
   name: redisinsights 
   namespace: identity
+  annotations:
+    kubernetes.io/ingress.class: nginx
 spec:
   rules:
   - host: redisinsights.k8s.local

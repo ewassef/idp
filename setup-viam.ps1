@@ -95,7 +95,7 @@ function InstallOryStack(){
 
 
 #install cockroach 
-helm install cockroach cockroachdb/cockroachdb -n identity --set ingress.enabled=true --set ingress.hosts[0]=cockroachdb.k8s.local
+helm install cockroach cockroachdb/cockroachdb -n identity --set ingress.enabled=true --set ingress.hosts[0]=cockroachdb.k8s.local --set ingress.annotations.kubernetes\.io/ingress\.class=nginx
 kubectl wait --for=condition=ready --selector=app.kubernetes.io/component=cockroachdb pod -n identity --timeout=240s
 #create the dbs
 kubectl run -it --rm cockroach-client --image=cockroachdb/cockroach --restart=Never --command -- ./cockroach sql --insecure --host=cockroach-cockroachdb-public.identity -e "CREATE DATABASE HYDRA;CREATE DATABASE KRATOS;CREATE DATABASE KETO;SHOW DATABASES"
