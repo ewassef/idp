@@ -126,8 +126,8 @@ hydra:
     # existingSecret: my-preexisting-secret
     urls:
       self: 
-        public: https://id.vonage.k8s.local:8443/oidc/
-        issuer: https://id.vonage.k8s.local:8443/oidc/
+        public: https://id.vonage.k8s.local/oidc/
+        issuer: https://id.vonage.k8s.local/oidc/
   autoMigrate: true
   dangerousForceHttp: false
   dangerousAllowInsecureRedirectUrls: false

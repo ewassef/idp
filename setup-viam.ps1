@@ -29,15 +29,18 @@ function CreateCluster(){
     kind create cluster --config kind.yaml
     
     #wait for the cluster to be stable
-    Start-Sleep -Seconds 5
-    kubectl wait --namespace ingress-nginx --for=condition=ready --selector=tier=node -n kube-system pod --timeout=240s
-    kubectl wait --namespace ingress-nginx --for=condition=ready --selector=tier=control-plane -n kube-system pod --timeout=240s
+     
+    kubectl wait --for=condition=ready --selector=tier=node -n kube-system pod --timeout=240s
+    kubectl wait --for=condition=ready --selector=tier=control-plane -n kube-system pod --timeout=240s
     
     kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-    Start-Sleep -Seconds 5
+    Start-Sleep -Seconds 10
     kubectl wait --namespace ingress-nginx --for=condition=ready --selector=app.kubernetes.io/component=controller pod --timeout=240s
     $webhook = kubectl get validatingwebhookconfigurations ingress-nginx-admission -o yaml 
     kubectl delete validatingwebhookconfigurations ingress-nginx-admission
+    kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability.yaml
+
+
 }
 
 function ConfigureHostfile(){
@@ -95,7 +98,7 @@ function InstallOryStack(){
 
 
 #install cockroach 
-helm install cockroach cockroachdb/cockroachdb -n identity --set ingress.enabled=true --set ingress.hosts[0]=cockroachdb.k8s.local --set ingress.annotations.kubernetes\.io/ingress\.class=nginx
+helm install cockroach cockroachdb/cockroachdb -n identity --set ingress.enabled=true --set ingress.hosts[0]=cockroachdb.k8s.local --set ingress.annotations.kubernetes\.io/ingress\.class=nginx --set tls.enabled=false --timeout 5m0s
 kubectl wait --for=condition=ready --selector=app.kubernetes.io/component=cockroachdb pod -n identity --timeout=240s
 #create the dbs
 kubectl run -it --rm cockroach-client --image=cockroachdb/cockroach --restart=Never --command -- ./cockroach sql --insecure --host=cockroach-cockroachdb-public.identity -e "CREATE DATABASE HYDRA;CREATE DATABASE KRATOS;CREATE DATABASE KETO;SHOW DATABASES"
@@ -123,13 +126,14 @@ helm install kratos-ui .\Ory\Kratos\kratos-selfservice-ui-node-0.19.3.tgz -f .\O
 helm pull ory/keto -d .\Ory\Keto --version 0.19.3
 helm install keto .\Ory\Keto\keto-0.19.3.tgz -f .\Ory\Keto\values.yaml -n identity
 kubectl create rolebinding keto-secrets-reader --role secret-reader --serviceaccount identity:keto -n identity
+kubectl apply -f .\Ory\Keto\keto-migrate-fix.yaml -n identity
 }
 
 function Configure-RedisInsights(){
 
     $secret = kubectl get secret redis -o jsonpath="{..redis-password}"
     $secret = [System.Text.Encoding]::Default.GetString([System.Convert]::FromBase64String($secret))
-    $uri = "https://redisinsights.k8s.local:8443/add/?name=Vonage IAM Redis&host=redis-master.default&port=6379&password=$($secret)&redirect=true"
+    $uri = "https://redisinsights.k8s.local/add/?name=Vonage IAM Redis&host=redis-master.default&port=6379&password=$($secret)&redirect=true"
      
     start $uri  
     
@@ -165,11 +169,11 @@ function OpenPages(){
     SafeAdd-HostEntry cockroachdb.k8s.local
     SafeAdd-HostEntry id.vonage.k8s.local
 
-    start https://dapr.k8s.local:8443
-    start https://zipkin.k8s.local:8443
+    start https://dapr.k8s.local 
+    start https://zipkin.k8s.local 
     Configure-RedisInsights
-    start https://cockroachdb.k8s.local:8443/
-    start https://id.vonage.k8s.local:8443/ui/dashboard
+    start https://cockroachdb.k8s.local 
+    start https://id.vonage.k8s.local/ui/dashboard
 }
 
 ConfigureHostfile

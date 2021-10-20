@@ -100,9 +100,14 @@ kratos:
                            "via": "email"
                         },
                         "verification": {
-                           "via": "email"
+                           "via": "phone"
                         }
                      }
+                  },
+                  "phone":{
+                     "type":"number",
+                     "format": "phone_number",
+                     "title": "Phone"
                   }
                },
                "required": [
@@ -160,17 +165,17 @@ kratos:
     serve:
       public:
         port: 4433
-        base_url: https://id.vonage.k8s.local:8443/idp
+        base_url: https://id.vonage.k8s.local/idp
         cors:
           enabled: true
       admin:
         port: 4434
-        base_url: https://id.vonage.k8s.local:8443/idp-admin
+        base_url: https://id.vonage.k8s.local/idp-admin
     dsn: cockroach://root:root@cockroach-cockroachdb-public.identity:26257/kratos
     selfservice:
-      default_browser_return_url: https://id.vonage.k8s.local:8443/ui/dashboard
+      default_browser_return_url: https://id.vonage.k8s.local/ui/dashboard
       whitelisted_return_urls:
-      - https://id.vonage.k8s.local:8443/ui/dashboard
+      - https://id.vonage.k8s.local/ui/dashboard
       methods:
         password:
           enabled: true
@@ -184,12 +189,12 @@ kratos:
         recovery:
           enabled: true
           lifespan: 15m
-          ui_url: https://id.vonage.k8s.local:8443/ui/recovery
+          ui_url: https://id.vonage.k8s.local/ui/recovery
         settings:
           privileged_session_max_age: 1m
-          ui_url: https://id.vonage.k8s.local:8443/ui/settings
+          ui_url: https://id.vonage.k8s.local/ui/settings
         login:
-          ui_url: https://id.vonage.k8s.local:8443/ui/auth/login
+          ui_url: https://id.vonage.k8s.local/ui/auth/login
           lifespan: 100m
           after:
             password:
@@ -201,10 +206,10 @@ kratos:
                     body: /etc/config/login.jsonnet
         logout:
           after:
-            default_browser_return_url: https://id.vonage.k8s.local:8443/ui/auth/login
+            default_browser_return_url: https://id.vonage.k8s.local/ui/auth/login
         registration:
           lifespan: 10m
-          ui_url: https://id.vonage.k8s.local:8443/ui/auth/registration
+          ui_url: https://id.vonage.k8s.local/ui/auth/registration
           after:
             password:
               hooks:
@@ -216,9 +221,9 @@ kratos:
                   body: /etc/config/login.jsonnet
         verification:
           enabled: true
-          ui_url: https://id.vonage.k8s.local:8443/ui/verify
+          ui_url: https://id.vonage.k8s.local/ui/verify
         error:
-          ui_url: https://id.vonage.k8s.local:8443/ui/error
+          ui_url: https://id.vonage.k8s.local/ui/error
     log:
       level: info
       format: json

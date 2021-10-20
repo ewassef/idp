@@ -92,10 +92,10 @@ kratosAdminUrl: "http://localhost:3500/v1.0/invoke/kratos-admin/method/"
 kratosPublicUrl: "http://localhost:3500/v1.0/invoke/kratos/method/"
 
 # Set this to ORY Kratos's public URL accessible from the outside world.
-kratosBrowserUrl: "https://id.vonage.k8s.local:8443/idp/"
+kratosBrowserUrl: "https://id.vonage.k8s.local/idp/"
 
 # The baseUrl
-baseUrl: "https://id.vonage.k8s.local:8443/ui"
+baseUrl: "https://id.vonage.k8s.local/ui"
 
 # The jwksUrl
 jwksUrl: "http://oathkeeper-api"
