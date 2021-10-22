@@ -33,14 +33,16 @@ function CreateCluster(){
     kubectl wait --for=condition=ready --selector=tier=node -n kube-system pod --timeout=240s
     kubectl wait --for=condition=ready --selector=tier=control-plane -n kube-system pod --timeout=240s
     
-    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+    kubectl create ns ingress-nginx
+    helm pull ingress-nginx/ingress-nginx -d .\Misc\Nginx 
+    helm install nginx .\Misc\Nginx\ingress-nginx-4.0.6.tgz -f .\Misc\Nginx\values.yaml -n ingress-nginx
     Start-Sleep -Seconds 10
     kubectl wait --namespace ingress-nginx --for=condition=ready --selector=app.kubernetes.io/component=controller pod --timeout=240s
     $webhook = kubectl get validatingwebhookconfigurations ingress-nginx-admission -o yaml 
     kubectl delete validatingwebhookconfigurations ingress-nginx-admission
-    kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability.yaml
-
-
+    kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+    $patch = $(gc metrics-server-patch.yaml -Raw)
+    kubectl patch deployment metrics-server -n kube-system --patch $patch
 }
 
 function ConfigureHostfile(){
@@ -67,7 +69,8 @@ function ConfigureChoco(){
     helm repo add ory https://k8s.ory.sh/helm/charts
     helm repo add bitnami https://charts.bitnami.com/bitnami
     helm repo add stable https://charts.helm.sh/stable
-
+    helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+    helm repo update
 
 }
 
@@ -136,7 +139,6 @@ function Configure-RedisInsights(){
     $uri = "https://redisinsights.k8s.local/add/?name=Vonage IAM Redis&host=redis-master.default&port=6379&password=$($secret)&redirect=true"
      
     start $uri  
-    
 }
 
 function SafeAdd-HostEntry{
