@@ -100,7 +100,7 @@ kratos:
                            "via": "email"
                         },
                         "verification": {
-                           "via": "phone"
+                           "via": "email"
                         }
                      }
                   },

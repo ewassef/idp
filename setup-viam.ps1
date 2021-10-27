@@ -74,7 +74,7 @@ function ConfigureChoco(){
 
 }
 
-function ConfigureDapr(){
+function ConfigureDapr{
     if ($(Test-CommandExists dapr) -eq $false){
         powershell -Command "iwr -useb https://raw.githubusercontent.com/dapr/cli/master/install/install.ps1 | iex"
     }
@@ -97,7 +97,7 @@ function ConfigureDapr(){
     kubectl create secret generic redis -n identity --from-literal=redis-password=$($secret)
 }
 
-function InstallOryStack(){
+function InstallOryStack{
 
 
 #install cockroach 
@@ -132,7 +132,7 @@ kubectl create rolebinding keto-secrets-reader --role secret-reader --serviceacc
 kubectl apply -f .\Ory\Keto\keto-migrate-fix.yaml -n identity
 }
 
-function Configure-RedisInsights(){
+function Configure-RedisInsights{
 
     $secret = kubectl get secret redis -o jsonpath="{..redis-password}"
     $secret = [System.Text.Encoding]::Default.GetString([System.Convert]::FromBase64String($secret))
@@ -163,7 +163,7 @@ function SafeAdd-HostEntry{
 
 }
 
-function OpenPages(){
+function OpenPages{
 
     SafeAdd-HostEntry dapr.k8s.local
     SafeAdd-HostEntry zipkin.k8s.local
@@ -178,9 +178,13 @@ function OpenPages(){
     start https://id.vonage.k8s.local/ui/dashboard
 }
 
+function Install-FullStack{
+
 ConfigureHostfile
 ConfigureChoco
 CreateCluster 
 ConfigureDapr
 InstallOryStack
 OpenPages
+
+}
