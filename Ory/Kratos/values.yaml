@@ -36,13 +36,7 @@ secret:
   enabled: true
   # ... and choose a different name for a secret you provide like this
   # nameOverride: "MyOtherName"
-  secretAnnotations:
-    # Create the secret before installation, and only then. This saves the secret from regenerating during an upgrade
-    # pre-upgrade is needed to upgrade from 0.7.0 to newer. Can be deleted afterwards.
-    helm.sh/hook-weight: "0"
-    helm.sh/hook: "pre-install, pre-upgrade"
-    helm.sh/hook-delete-policy: "before-hook-creation"
-    helm.sh/resource-policy: "keep"
+
 
 ingress:
   public:
@@ -52,7 +46,7 @@ ingress:
       kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
     hosts:
-      - host: id.vonage.k8s.local
+      - host: id.dev-k8s.cloud
         paths:
         - path: "/idp(/|$)(.*)"
           pathType: ImplementationSpecific
@@ -65,57 +59,48 @@ ingress:
 kratos:
   development: false
   # Enable the initialization job. Required to work with a DB
-  autoMigrate: true
+  automigration:
+    enabled: true
+  identity:
+      default_schema_id: default
+      schemas:
+        - id: default
+          url: file:///etc/config/identity.default.schema.json
   identitySchemas:
-    "login.jsonnet": |
-      function(ctx) {
-        flow_id: ctx.flow.id,
-        identity_id: if ctx["identity"] != null then ctx.identity.id,
-        headers: ctx.request_headers,
-        url: ctx.request_url,
-        method: ctx.request_method,
-        __raw: ctx
-      }
     "identity.default.schema.json": |
       {
-         "$id": "https://schemas.ory.sh/presets/kratos/identity.email.schema.json",
-         "$schema": "http://json-schema.org/draft-07/schema#",
-         "title": "Person",
-         "type": "object",
-         "properties": {
-            "traits": {
-               "type": "object",
-               "properties": {
-                  "email": {
-                     "type": "string",
-                     "format": "email",
-                     "title": "E-Mail",
-                     "ory.sh/kratos": {
-                        "credentials": {
-                           "password": {
-                              "identifier": true
-                           }
-                        },
-                        "recovery": {
-                           "via": "email"
-                        },
-                        "verification": {
-                           "via": "email"
-                        }
-                     }
+        "$id": "https://schemas.ory.sh/presets/kratos/identity.email.schema.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Person",
+        "type": "object",
+        "properties": {
+          "traits": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string",
+                "format": "email",
+                "title": "E-Mail",
+                "ory.sh/kratos": {
+                  "credentials": {
+                    "password": {
+                      "identifier": true
+                    }
                   },
-                  "phone":{
-                     "type":"number",
-                     "format": "phone_number",
-                     "title": "Phone"
+                  "recovery": {
+                    "via": "email"
+                  },
+                  "verification": {
+                    "via": "email"
                   }
-               },
-               "required": [
-                  "email"
-               ],
-               "additionalProperties": false
-            }
-         }
+                }
+              }
+            },
+            "required": [
+              "email"
+            ]
+          }
+        }
       }
 #  You can add multiple identity schemas here
 #  identitySchemas:
@@ -165,65 +150,13 @@ kratos:
     serve:
       public:
         port: 4433
-        base_url: https://id.vonage.k8s.local/idp
+        base_url: https://id.dev-k8s.cloud/idp
         cors:
           enabled: true
       admin:
         port: 4434
-        base_url: https://id.vonage.k8s.local/idp-admin
+        base_url: https://id.dev-k8s.cloud/idp-admin
     dsn: cockroach://root:root@cockroach-cockroachdb-public.identity:26257/kratos
-    selfservice:
-      default_browser_return_url: https://id.vonage.k8s.local/ui/dashboard
-      whitelisted_return_urls:
-      - https://id.vonage.k8s.local/ui/dashboard
-      methods:
-        password:
-          enabled: true
-        oidc:
-          enabled: true
-        profile:
-          enabled: true
-        link:
-          enabled: true
-      flows:
-        recovery:
-          enabled: true
-          lifespan: 15m
-          ui_url: https://id.vonage.k8s.local/ui/recovery
-        settings:
-          privileged_session_max_age: 1m
-          ui_url: https://id.vonage.k8s.local/ui/settings
-        login:
-          ui_url: https://id.vonage.k8s.local/ui/auth/login
-          lifespan: 100m
-          after:
-            password:
-              hooks:
-                - hook: web_hook
-                  config:
-                    url: http://localhost:3500/v1.0/publish/audit/VIAM
-                    method: POST
-                    body: /etc/config/login.jsonnet
-        logout:
-          after:
-            default_browser_return_url: https://id.vonage.k8s.local/ui/auth/login
-        registration:
-          lifespan: 10m
-          ui_url: https://id.vonage.k8s.local/ui/auth/registration
-          after:
-            password:
-              hooks:
-              - hook: session
-              - hook: web_hook
-                config:
-                  url: http://localhost:3500/v1.0/publish/audit/VIAM
-                  method: POST
-                  body: /etc/config/login.jsonnet
-        verification:
-          enabled: true
-          ui_url: https://id.vonage.k8s.local/ui/verify
-        error:
-          ui_url: https://id.vonage.k8s.local/ui/error
     log:
       level: info
       format: json
@@ -292,7 +225,7 @@ deployment:
   # If you need to use a different tracing provider, please manually set the configuration values
   # via "kratos.config" or via "deployment.extraEnv".
   tracing:
-    datadog:
+    otel:
       enabled: false
 
       # Sets the datadog DD_ENV environment variable. This value indicates the environment where kratos is running.

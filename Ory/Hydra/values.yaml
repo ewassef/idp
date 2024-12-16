@@ -32,8 +32,8 @@ service:
     port: 4444
     # If you do want to specify annotations, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'annotations:'.
-    annotations:  
-      kubernetes.io/ingress.class: nginx
+    # annotations:  
+    #   kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
     labels: {}
     #      If you do want to specify additional labels, uncomment the following
@@ -49,8 +49,8 @@ service:
     port: 4445
     # If you do want to specify annotations, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'annotations:'.
-    annotations:  
-      kubernetes.io/ingress.class: nginx
+    # annotations:  
+    #   kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
     labels: {}
     #      If you do want to specify additional labels, uncomment the following
@@ -65,10 +65,10 @@ ingress:
     enabled: true
     annotations: 
       nginx.ingress.kubernetes.io/rewrite-target: /$2
-      kubernetes.io/ingress.class: nginx
+      # kubernetes.io/ingress.class: nginx
     #     kubernetes.io/tls-acme: "true"
     hosts:
-      - host: id.vonage.k8s.local
+      - host: id.dev-k8s.cloud
         paths: 
         - path: "/oidc(/|$)(.*)"
           pathType: ImplementationSpecific
@@ -85,10 +85,10 @@ ingress:
       nginx.ingress.kubernetes.io/rewrite-target: /$2
     #      If you do want to specify annotations, uncomment the following
     #      lines, adjust them as necessary, and remove the curly braces after 'annotations:'.
-      kubernetes.io/ingress.class: nginx
+    #      kubernetes.io/ingress.class: nginx
     #      kubernetes.io/tls-acme: "true"
     hosts:
-      - host: id.vonage.k8s.local
+      - host: id.dev-k8s.cloud
         paths: 
         - path: "/oidc-admin(/|$)(.*)"
           pathType: ImplementationSpecific
@@ -117,18 +117,19 @@ hydra:
       system: 
         - "ThisisalongvaluethatneedstobeCONSISTENTbetweeninstalls!"
         - "ThisisalongvaluethatneedstobeCONSISTENTbetweeninstalls2!"
-      cookie: "ThisisalongvaluethatneedstobeCONSISTENTbetweeninstalls2!"
-    secretAnnotations:
-    # Create the secret before installation, and only then. This saves the secret from regenerating during an upgrade
-      helm.sh/hook: "pre-install"
-      helm.sh/hook-delete-policy: "before-hook-creation"
+      cookie: 
+        - "ThisisalongvaluethatneedstobeCONSISTENTbetweeninstalls2!"
+
     # Use a pre-existing secret (see secret.yaml for required fields)
     # existingSecret: my-preexisting-secret
     urls:
       self: 
-        public: https://id.vonage.k8s.local/oidc/
-        issuer: https://id.vonage.k8s.local/oidc/
-  autoMigrate: true
+        public: https://id.dev-k8s.cloud/oidc/
+        issuer: https://id.dev-k8s.cloud/oidc/
+  
+  automigration: 
+    enabled: true
+    type: job
   dangerousForceHttp: false
   dangerousAllowInsecureRedirectUrls: false
 

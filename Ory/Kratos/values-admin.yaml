@@ -46,7 +46,7 @@ ingress:
       kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
     hosts:
-      - host: id.vonage.k8s.local
+      - host: id.dev-k8s.cloud
         paths:
         - path: "/idp-admin(/|$)(.*)"
           pathType: ImplementationSpecific
@@ -59,7 +59,8 @@ ingress:
 kratos:
   development: false
   # Enable the initialization job. Required to work with a DB
-  autoMigrate: true
+  autoMigration:
+    enabled: true
   identitySchemas:
     "login.jsonnet": |
       function(ctx) {
@@ -154,17 +155,17 @@ kratos:
     serve:
       public:
         port: 4433
-        base_url: https://id.vonage.k8s.local/idp
+        base_url: https://id.dev-k8s.cloud/idp
         cors:
           enabled: true
       admin:
         port: 4434
-        base_url: https://id.vonage.k8s.local/idp-admin
+        base_url: https://id.dev-k8s.cloud/idp-admin
     dsn: cockroach://root:root@cockroach-cockroachdb-public.identity:26257/kratos
     selfservice:
-      default_browser_return_url: https://id.vonage.k8s.local/ui/dashboard
+      default_browser_return_url: https://id.dev-k8s.cloud/ui/dashboard
       whitelisted_return_urls:
-      - https://id.vonage.k8s.local/ui/dashboard
+      - https://id.dev-k8s.cloud/ui/dashboard
       methods:
         password:
           enabled: true
@@ -178,12 +179,12 @@ kratos:
         recovery:
           enabled: true
           lifespan: 15m
-          ui_url: https://id.vonage.k8s.local/ui/recovery
+          ui_url: https://id.dev-k8s.cloud/ui/recovery
         settings:
           privileged_session_max_age: 1m
-          ui_url: https://id.vonage.k8s.local/ui/settings
+          ui_url: https://id.dev-k8s.cloud/ui/settings
         login:
-          ui_url: https://id.vonage.k8s.local/ui/auth/login
+          ui_url: https://id.dev-k8s.cloud/ui/auth/login
           lifespan: 100m
           after:
             password:
@@ -195,10 +196,10 @@ kratos:
                     body: /etc/config/login.jsonnet
         logout:
           after:
-            default_browser_return_url: https://id.vonage.k8s.local/ui/auth/login
+            default_browser_return_url: https://id.dev-k8s.cloud/ui/auth/login
         registration:
           lifespan: 10m
-          ui_url: https://id.vonage.k8s.local/ui/auth/registration
+          ui_url: https://id.dev-k8s.cloud/ui/auth/registration
           after:
             password:
               hooks:
@@ -210,9 +211,9 @@ kratos:
                   body: /etc/config/login.jsonnet
         verification:
           enabled: true
-          ui_url: https://id.vonage.k8s.local/ui/verify
+          ui_url: https://id.dev-k8s.cloud/ui/verify
         error:
-          ui_url: https://id.vonage.k8s.local/ui/error
+          ui_url: https://id.dev-k8s.cloud/ui/error
     log:
       level: info
       format: json
